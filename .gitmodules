@@ -4,3 +4,9 @@
 [submodule "subspace-lattice"]
 	path = subspace-lattice
 	url = https://github.com/Digital-Defiance/subspace-lattice.git
+[submodule "leaderboard"]
+	path = leaderboard
+	url = https://github.com/Digital-Defiance/Warp12-leaderboard.git
+[submodule "ops"]
+	path = ops
+	url = https://github.com/Digital-Defiance/iwgf-ops.git

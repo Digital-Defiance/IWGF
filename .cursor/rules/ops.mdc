@@ -1,0 +1,9 @@
+---
+description: Federation ops console when editing ops files
+globs: ops/**
+alwaysApply: false
+---
+
+When working under `ops/`, this is the IWGF ops console (ops.iwgf.org) for Warp + Lattice. Warp callables live in `Warp12/functions`; Lattice panels should call the `lattice` functions codebase. Deploy stages through `Warp12/federation-hosting/ops`.
+
+See root `AGENTS.md` and `ops/README.md`.

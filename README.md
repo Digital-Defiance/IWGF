@@ -1,15 +1,13 @@
 # IWGF
 
-Meta-repo for the **Interstellar Warp Gaming Federation** workspace. Product code lives in git submodules; this repo holds federation docs, Cursor rules, and (soon) shared entrypoints.
-
-## Layout
+Meta-repo for the **Interstellar Warp Gaming Federation**.
 
 | Path | Remote | Role |
 |------|--------|------|
-| [`Warp12/`](https://github.com/Digital-Defiance/Warp12) | submodule | Warp Dominoes + Warp functions + Firestore deploy |
-| [`subspace-lattice/`](https://github.com/Digital-Defiance/subspace-lattice) | submodule | Subspace Lattice + lattice functions |
-| `leaderboard/` | *(planned extract)* | Federation standings → iwgf.org |
-| `ops/` | *(planned extract)* | Federation ops → ops.iwgf.org |
+| [`Warp12/`](https://github.com/Digital-Defiance/Warp12) | submodule | Warp Dominoes → [warp.iwgf.org](https://warp.iwgf.org) |
+| [`subspace-lattice/`](https://github.com/Digital-Defiance/subspace-lattice) | submodule | Subspace Lattice → [lattice.iwgf.org](https://lattice.iwgf.org) |
+| [`leaderboard/`](https://github.com/Digital-Defiance/Warp12-leaderboard) | submodule | Federation standings → [iwgf.org](https://iwgf.org) |
+| [`ops/`](https://github.com/Digital-Defiance/iwgf-ops) | submodule | Federation ops → [ops.iwgf.org](https://ops.iwgf.org) |
 
 Shared Firebase project: **`warp-12`**.
 
@@ -18,12 +16,17 @@ Shared Firebase project: **`warp-12`**.
 ```bash
 git clone --recurse-submodules https://github.com/Digital-Defiance/IWGF.git
 cd IWGF
-# If you cloned without submodules:
 git submodule update --init --recursive
 ```
 
-Each product still has its own `yarn install` / scripts — run from that subdirectory (or via `bin/iwgf` once added).
+## Commands
 
-## Agents
+```bash
+./bin/iwgf help
+./bin/iwgf warp serve
+./bin/iwgf lattice serve
+./bin/iwgf leaderboard serve
+./bin/iwgf ops serve
+```
 
-Start at [`AGENTS.md`](AGENTS.md), then the product guide under that submodule.
+Each sibling has its own `yarn install`. Agents: start at [`AGENTS.md`](AGENTS.md).

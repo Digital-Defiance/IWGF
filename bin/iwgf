@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+# IWGF workspace dispatcher — thin wrapper over sibling yarn scripts.
+# Usage:
+#   iwgf <product> <action> [args...]
+#   iwgf <product> -- <yarn-args...>
+#   iwgf help
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+usage() {
+  cat <<'EOF'
+IWGF dispatcher
+
+Products:
+  warp | w12          Warp12/
+  lattice | sl        subspace-lattice/
+  leaderboard | lb    leaderboard/
+  ops                 ops/
+  federation | fed    shared surfaces (aliases into leaderboard/ops/Warp12)
+
+Examples:
+  iwgf warp serve
+  iwgf lattice serve
+  iwgf leaderboard serve
+  iwgf ops serve
+  iwgf federation deploy:leaderboard
+  iwgf federation deploy:ops
+  iwgf federation deploy:firestore
+  iwgf warp build:mac
+  iwgf lattice -- yarn evolve
+  iwgf help
+
+Escape hatch: iwgf <product> -- <any yarn args in that repo>
+EOF
+}
+
+resolve_dir() {
+  case "$1" in
+    warp|w12|warp12) echo "$ROOT/Warp12" ;;
+    lattice|sl|subspace|subspace-lattice) echo "$ROOT/subspace-lattice" ;;
+    leaderboard|lb) echo "$ROOT/leaderboard" ;;
+    ops) echo "$ROOT/ops" ;;
+    federation|fed|shared) echo "$ROOT/Warp12" ;; # firestore / staging live here
+    *) return 1 ;;
+  esac
+}
+
+# Map curated actions → yarn script name per product.
+# Empty string = unsupported for that product.
+map_action() {
+  local product="$1" action="$2"
+  case "$product:$action" in
+    # Day-to-day serve
+    warp:serve|warp:dev) echo "serve:bridge" ;;
+    lattice:serve|lattice:dev) echo "serve:web" ;;
+    leaderboard:serve|leaderboard:dev) echo "dev" ;;
+    ops:serve|ops:dev) echo "dev" ;;
+
+    # Tauri (games)
+    warp:tauri:dev|lattice:tauri:dev) echo "tauri:dev" ;;
+    warp:tauri:build|lattice:tauri:build) echo "tauri:build" ;;
+    warp:tauri:ios:dev|lattice:tauri:ios:dev) echo "tauri:ios:dev" ;;
+    warp:tauri:ios:build|lattice:tauri:ios:build) echo "tauri:ios:build" ;;
+    warp:tauri:android:dev|lattice:tauri:android:dev) echo "tauri:android:dev" ;;
+    warp:tauri:android:build|lattice:tauri:android:build) echo "tauri:android:build" ;;
+    ops:tauri:dev) echo "tauri:dev" ;;
+    ops:tauri:build) echo "tauri:build" ;;
+
+    # Store / native builds (pass-through same name when present)
+    warp:build:mac|lattice:build:mac) echo "build:mac" ;;
+    warp:build:mac-appstore|lattice:build:mac-appstore) echo "build:mac-appstore" ;;
+    warp:build:macos-appstore|lattice:build:macos-appstore) echo "build:macos-appstore" ;;
+    warp:build:ios-appstore|lattice:build:ios-appstore) echo "build:ios-appstore" ;;
+    warp:build:android|lattice:build:android) echo "build:android" ;;
+    warp:build:android:apk|lattice:build:android:apk) echo "build:android:apk" ;;
+    warp:build:windows|lattice:build:windows) echo "build:windows" ;;
+    warp:build:windows:store|lattice:build:windows:store) echo "build:windows:store" ;;
+    warp:build:windows:cross|lattice:build:windows:cross) echo "build:windows:cross" ;;
+
+    # Test / build
+    warp:test|lattice:test) echo "test" ;;
+    warp:test:e2e|lattice:test:e2e|leaderboard:test:e2e) echo "test:e2e" ;;
+    leaderboard:test|ops:test) echo "test" ;;
+    warp:build|lattice:build|leaderboard:build|ops:build) echo "build" ;;
+    warp:build:all) echo "build:all" ;;
+    lattice:build:all) echo "build:all" ;;
+    lattice:emulators) echo "emulators" ;;
+
+    # Deploy (product-scoped)
+    warp:deploy|warp:deploy:firebase) echo "deploy:firebase" ;;
+    lattice:deploy|lattice:deploy:firebase) echo "deploy:firebase" ;;
+    leaderboard:deploy|leaderboard:deploy:hosting) echo "deploy:hosting" ;;
+    ops:deploy|ops:deploy:hosting) echo "deploy:hosting" ;;
+
+    # Federation aliases (run from Warp12)
+    federation:deploy:leaderboard|federation:leaderboard) echo "deploy:hosting:leaderboard" ;;
+    federation:deploy:ops|federation:ops) echo "deploy:hosting:ops" ;;
+    federation:deploy:firestore|federation:firestore) echo "deploy:firestore" ;;
+    federation:serve:ops) echo "serve:ops" ;;
+    federation:serve:leaderboard) echo "preview:leaderboard" ;;
+    federation:build:leaderboard) echo "build:leaderboard" ;;
+    federation:build:ops) echo "build:ops" ;;
+
+    *) return 1 ;;
+  esac
+}
+
+normalize_product() {
+  case "$1" in
+    warp|w12|warp12) echo warp ;;
+    lattice|sl|subspace|subspace-lattice) echo lattice ;;
+    leaderboard|lb) echo leaderboard ;;
+    ops) echo ops ;;
+    federation|fed|shared) echo federation ;;
+    *) return 1 ;;
+  esac
+}
+
+if [[ $# -lt 1 ]] || [[ "$1" == "help" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+PRODUCT_RAW="$1"
+shift
+PRODUCT="$(normalize_product "$PRODUCT_RAW")" || {
+  echo "Unknown product: $PRODUCT_RAW" >&2
+  usage >&2
+  exit 1
+}
+
+DIR="$(resolve_dir "$PRODUCT")"
+if [[ ! -d "$DIR" ]]; then
+  echo "Missing directory: $DIR (init submodules?)" >&2
+  exit 1
+fi
+
+if [[ $# -lt 1 ]]; then
+  echo "Missing action. Try: iwgf $PRODUCT_RAW help  →  iwgf help" >&2
+  exit 1
+fi
+
+# Escape hatch: iwgf <product> -- yarn-args...
+if [[ "$1" == "--" ]]; then
+  shift
+  cd "$DIR"
+  exec yarn "$@"
+fi
+
+ACTION="$1"
+shift
+
+SCRIPT="$(map_action "$PRODUCT" "$ACTION")" || {
+  # Fall through: treat action as a yarn script name in that repo
+  SCRIPT="$ACTION"
+}
+
+cd "$DIR"
+echo "+ ($PRODUCT) yarn $SCRIPT $*" >&2
+exec yarn "$SCRIPT" "$@"

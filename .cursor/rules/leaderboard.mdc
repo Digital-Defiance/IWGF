@@ -1,0 +1,9 @@
+---
+description: Federation leaderboard SPA when editing leaderboard files
+globs: leaderboard/**
+alwaysApply: false
+---
+
+When working under `leaderboard/`, this is the IWGF standings site (iwgf.org). Build/deploy stages through `Warp12/federation-hosting/leaderboard`. Depends on published `warp12-engine` and `file:../Warp12/libs/tei-core`.
+
+See root `AGENTS.md` and `leaderboard/README.md`.
