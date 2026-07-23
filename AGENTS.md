@@ -45,7 +45,7 @@ Both are **Tauri 2** shells over React/Vite SPAs. Game logic lives in TypeScript
 
 **Deploy mechanics:** Firebase `public` dirs must live under `Warp12/` (where `firebase.json` lives). `Warp12/scripts/sync-federation-hosting.sh` copies `leaderboard/dist` or `ops/dist` → `Warp12/federation-hosting/{leaderboard,ops}/` before hosting deploy.
 
-**Shared identity:** Auth + `playerProfiles` / federation call signs (never Google `displayName`).
+**Shared identity:** Auth + `playerProfiles` / federation call signs (never Google `displayName`). Captain avatar (`captainGender`), narration pronouns (`captainPronouns`), and TTS spoken-as (`speakAs`) live on `playerProfiles` and dual-write to Warp `playerStats` so every title can narrate consistently.
 
 **Separate TEI pools:**
 
