@@ -90,10 +90,11 @@ Run installs **per sibling** (`yarn install` in each). Or use `./bin/iwgf`.
 ./bin/iwgf ops serve               # :4220
 ./bin/iwgf warp tauri:dev
 ./bin/iwgf lattice build:mac
+./bin/iwgf federation deploy:functions
 ./bin/iwgf federation deploy:leaderboard
 ./bin/iwgf federation deploy:ops
 ./bin/iwgf federation deploy:firestore
-./bin/iwgf lattice -- yarn evolve  # escape hatch
+./bin/iwgf lattice -- evolve       # escape hatch (yarn evolve)
 ./bin/iwgf help
 ```
 

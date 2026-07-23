@@ -30,14 +30,16 @@ Examples:
   iwgf lattice serve
   iwgf leaderboard serve
   iwgf ops serve
+  iwgf federation deploy:functions
   iwgf federation deploy:leaderboard
   iwgf federation deploy:ops
   iwgf federation deploy:firestore
   iwgf warp build:mac
-  iwgf lattice -- yarn evolve
+  iwgf lattice -- evolve
   iwgf help
 
-Escape hatch: iwgf <product> -- <any yarn args in that repo>
+Escape hatch: iwgf <product> -- <yarn-script-or-args>
+  (leading "yarn" after -- is optional / stripped)
 EOF
 }
 
@@ -125,6 +127,7 @@ map_action() {
 
     # Deploy (product-scoped)
     warp:deploy|warp:deploy:firebase) echo "deploy:firebase" ;;
+    warp:deploy:functions|warp:functions) echo "deploy:functions" ;;
     lattice:deploy|lattice:deploy:firebase) echo "deploy:firebase" ;;
     leaderboard:deploy|leaderboard:deploy:hosting) echo "deploy:hosting" ;;
     ops:deploy|ops:deploy:hosting) echo "deploy:hosting" ;;
@@ -133,6 +136,7 @@ map_action() {
     federation:deploy:leaderboard|federation:leaderboard) echo "deploy:hosting:leaderboard" ;;
     federation:deploy:ops|federation:ops) echo "deploy:hosting:ops" ;;
     federation:deploy:firestore|federation:firestore) echo "deploy:firestore" ;;
+    federation:deploy:functions|federation:functions) echo "deploy:functions" ;;
     federation:serve:ops) echo "serve:ops" ;;
     federation:serve:leaderboard) echo "preview:leaderboard" ;;
     federation:build:leaderboard) echo "build:leaderboard" ;;
@@ -188,9 +192,13 @@ if [[ $# -lt 1 ]]; then
   exit 1
 fi
 
-# Escape hatch: iwgf <product> -- yarn-args...
+# Escape hatch: iwgf <product> -- [yarn] script-or-args...
 if [[ "$1" == "--" ]]; then
   shift
+  # Docs / muscle memory often include a redundant "yarn" after --.
+  if [[ $# -gt 0 ]] && [[ "$1" == "yarn" ]]; then
+    shift
+  fi
   cd "$DIR"
   exec yarn "$@"
 fi

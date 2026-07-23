@@ -4,6 +4,6 @@ globs: ops/**
 alwaysApply: false
 ---
 
-When working under `ops/`, this is the IWGF ops console (ops.iwgf.org) for Warp + Lattice. Warp callables live in `Warp12/functions`; Lattice panels should call the `lattice` functions codebase. Deploy stages through `Warp12/federation-hosting/ops`.
+When working under `ops/`, this is the IWGF ops console (ops.iwgf.org) for Warp + Lattice. Use the header **Warp | Lattice** product toggle — shared panels reuse chrome; Crews/Reports/TTS hide on Lattice. Warp + Lattice **ops** callables live in `Warp12/functions` (same `/api/fn` proxy). Lattice **player** callables stay in `subspace-lattice/apps/functions`. Deploy stages through `Warp12/federation-hosting/ops`.
 
 See root `AGENTS.md` and `ops/README.md`.
