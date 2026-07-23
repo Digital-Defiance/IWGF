@@ -83,6 +83,7 @@ Run installs **per sibling** (`yarn install` in each). Or use `./bin/iwgf`.
 ## 4. `bin/iwgf` cheat sheet
 
 ```bash
+./bin/iwgf auth                    # firebase + gcloud + npm login
 ./bin/iwgf warp serve              # Bridge :4200
 ./bin/iwgf lattice serve           # web :4200
 ./bin/iwgf leaderboard serve       # :4210

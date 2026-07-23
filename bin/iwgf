@@ -3,6 +3,7 @@
 # Usage:
 #   iwgf <product> <action> [args...]
 #   iwgf <product> -- <yarn-args...>
+#   iwgf auth [all]
 #   iwgf help
 set -euo pipefail
 
@@ -13,6 +14,9 @@ usage() {
   cat <<'EOF'
 IWGF dispatcher
 
+Workspace:
+  auth | auth all     Firebase + gcloud + npm login (shared warp-12 project)
+
 Products:
   warp | w12          Warp12/
   lattice | sl        subspace-lattice/
@@ -21,6 +25,7 @@ Products:
   federation | fed    shared surfaces (aliases into leaderboard/ops/Warp12)
 
 Examples:
+  iwgf auth
   iwgf warp serve
   iwgf lattice serve
   iwgf leaderboard serve
@@ -34,6 +39,36 @@ Examples:
 
 Escape hatch: iwgf <product> -- <any yarn args in that repo>
 EOF
+}
+
+# Same sequence as Warp12 `yarn auth:all` — shared Firebase project lives there.
+iwgf_auth_all() {
+  local warp="$ROOT/Warp12"
+  if [[ ! -d "$warp" ]]; then
+    echo "Missing directory: $warp (init submodules?)" >&2
+    exit 1
+  fi
+
+  echo "+ firebase login --reauth" >&2
+  firebase login --reauth
+
+  echo "+ gcloud auth login" >&2
+  gcloud auth login
+
+  echo "+ gcloud config set project \$FIREBASE_PROJECT (from Warp12 deploy env)" >&2
+  (
+    cd "$warp"
+    # shellcheck source=/dev/null
+    . scripts/lib/warp-env.sh
+    warp_env_load deploy
+    warp_env_validate deploy
+    gcloud config set project "$FIREBASE_PROJECT"
+  )
+
+  echo "+ npm login" >&2
+  npm login
+
+  echo "Auth complete (Firebase, gcloud → \$FIREBASE_PROJECT, npm)." >&2
 }
 
 resolve_dir() {
@@ -120,6 +155,17 @@ normalize_product() {
 
 if [[ $# -lt 1 ]] || [[ "$1" == "help" ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
   usage
+  exit 0
+fi
+
+# Workspace-level auth (not product-scoped) — mirrors Warp12 `yarn auth:all`.
+if [[ "$1" == "auth" ]]; then
+  shift
+  if [[ $# -gt 0 ]] && [[ "$1" != "all" ]]; then
+    echo "Unknown auth action: $1 (try: iwgf auth  or  iwgf auth all)" >&2
+    exit 1
+  fi
+  iwgf_auth_all
   exit 0
 fi
 

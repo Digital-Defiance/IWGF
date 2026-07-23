@@ -23,6 +23,7 @@ git submodule update --init --recursive
 
 ```bash
 ./bin/iwgf help
+./bin/iwgf auth                 # firebase + gcloud + npm (shared warp-12)
 ./bin/iwgf warp serve
 ./bin/iwgf lattice serve
 ./bin/iwgf leaderboard serve
