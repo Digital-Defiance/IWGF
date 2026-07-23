@@ -1,0 +1,11 @@
+---
+description: Subspace Lattice product guide when editing Lattice files
+globs: subspace-lattice/**
+alwaysApply: false
+---
+
+When working under `subspace-lattice/`, follow `subspace-lattice/AGENTS.md`.
+
+Critical: never deploy Firestore from this repo — merge into Warp12 and deploy rules from Warp12. Soft-ship ruleset is `hybrid-fleet`. Collections are `lattice*` (see core `collections.ts`).
+
+@subspace-lattice/AGENTS.md

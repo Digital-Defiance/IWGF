@@ -1,0 +1,11 @@
+---
+description: Warp 12 product guide when editing Warp12 files
+globs: Warp12/**
+alwaysApply: false
+---
+
+When working under `Warp12/`, follow `Warp12/AGENTS.md` (commands, engine immutability, prefer direct yarn scripts over nx run).
+
+Federation context: root `AGENTS.md`. Shared Firestore rules live here — Lattice fragment must stay in sync with `subspace-lattice/firestore.rules`.
+
+@Warp12/AGENTS.md

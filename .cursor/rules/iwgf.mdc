@@ -1,0 +1,10 @@
+---
+description: IWGF federation workspace — map of Warp12 + Subspace Lattice + shared Firebase
+alwaysApply: true
+---
+
+This workspace is the IWGF parent folder containing sibling repos `Warp12/` and `subspace-lattice/`.
+
+Read and follow root `AGENTS.md` first. For product work, also read that product's `AGENTS.md`.
+
+@AGENTS.md

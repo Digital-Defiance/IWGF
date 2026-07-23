@@ -1,0 +1,21 @@
+# IWGF meta-repo — product trees are git submodules (see .gitmodules).
+# Do not add Warp12/ or subspace-lattice/ as normal directories.
+
+.DS_Store
+**/.DS_Store
+
+# Local-only
+.env
+.env.*
+!.env.example
+
+# Future local tooling
+node_modules/
+.nx/
+dist/
+*.log
+
+# Editor
+.idea/
+*.swp
+*~

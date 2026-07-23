@@ -1,0 +1,6 @@
+[submodule "Warp12"]
+	path = Warp12
+	url = https://github.com/Digital-Defiance/Warp12.git
+[submodule "subspace-lattice"]
+	path = subspace-lattice
+	url = https://github.com/Digital-Defiance/subspace-lattice.git
